@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         替换下次付款日期为真实IP--all突显
-// @namespace    https://github.com/zxhhtt/mtf
+// @name         替换下次付款日期为真实IP--all突显-排除
+// @namespace    http://your.website.com
 // @version      1.0
-// @description  将 "下次付款日期" 替换为真实IP
-// @author       饮茶先
+// @description  排除Web Hosting，将 "下次付款日期" 替换为真实IP
+// @author       Your Name
 // @match        https://cloud.mtf.is/clientarea.php?action=productdetails&id=*
 // @grant        none
 // ==/UserScript==
@@ -32,19 +32,27 @@
 
                 if (match) {
                     var realIp = match[1]; // 提取IP地址
-                    // 查找并替换 "下次付款日期" 元素
-                    var listInfoTitles = document.querySelectorAll('.list-info-title');
-                    for (var i = 0; i < listInfoTitles.length; i++) {
-                        if (listInfoTitles[i].textContent === '下次付款日期') {
-                            var parentListItem = listInfoTitles[i].parentElement;
-                            parentListItem.querySelector('.list-info-title').textContent = '真实IP';
 
-                            // 设置真实IP文本为黄色
-                            var realIpText = parentListItem.querySelector('.list-info-text');
-                            realIpText.textContent = realIp;
-                            realIpText.style.color = 'yellow'; // 设置文本颜色为黄色
+                    // 获取产品名称
+                    var productNameElement = document.querySelector('.product-name');
+                    var productName = productNameElement.textContent.trim();
 
-                            break;
+                    // 检查产品名称是否包含 "- Web Hosting"
+                    if (!productName.includes("- Web Hosting")) {
+                        // 查找并替换 "下次付款日期" 元素
+                        var listInfoTitles = document.querySelectorAll('.list-info-title');
+                        for (var i = 0; i < listInfoTitles.length; i++) {
+                            if (listInfoTitles[i].textContent === '下次付款日期') {
+                                var parentListItem = listInfoTitles[i].parentElement;
+                                parentListItem.querySelector('.list-info-title').textContent = '真实IP';
+
+                                // 设置真实IP文本为黄色
+                                var realIpText = parentListItem.querySelector('.list-info-text');
+                                realIpText.textContent = realIp;
+                                realIpText.style.color = 'yellow'; // 设置文本颜色为黄色
+
+                                break;
+                            }
                         }
                     }
                 }
