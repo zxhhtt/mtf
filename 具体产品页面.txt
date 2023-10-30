@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         替换下次付款日期为真实IP--all突显
-// @namespace    http://your.website.com
+// @namespace    https://github.com/zxhhtt/mtf
 // @version      1.0
 // @description  将 "下次付款日期" 替换为真实IP
 // @author       饮茶先

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         提取真实IP显示排除- Web Hosting
-// @namespace    http://your.website.com
+// @namespace    https://github.com/zxhhtt/mtf
 // @version      1.0
 // @description  从目标页面提取真实IP并插入到产品名称下方，突出显示为黄色
 // @author       饮茶先
