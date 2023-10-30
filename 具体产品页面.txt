@@ -1,0 +1,53 @@
+// ==UserScript==
+// @name         替换下次付款日期为真实IP--all突显
+// @namespace    http://your.website.com
+// @version      1.0
+// @description  将 "下次付款日期" 替换为真实IP
+// @author       饮茶先
+// @match        https://cloud.mtf.is/clientarea.php?action=productdetails&id=*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // 获取当前页面的URL
+    var currentURL = window.location.href;
+
+    // 检查当前页面是否匹配目标URL的模式
+    if (currentURL.match(/https:\/\/cloud\.mtf\.is\/clientarea\.php\?action=productdetails&id=\d+/)) {
+        // 提取产品ID，构建目标URL
+        var productId = currentURL.match(/id=(\d+)/)[1];
+        var targetURL = 'https://cloud.mtf.is/index.php?m=VirtualizorNAT&id=' + productId;
+
+        // 获取真实IP地址
+        fetch(targetURL)
+            .then(function(response) {
+                return response.text();
+            })
+            .then(function(data) {
+                // 使用正则表达式提取IP地址
+                var ipAddressRegex = /连接地址 (\d+\.\d+\.\d+\.\d+):\d+/;
+                var match = data.match(ipAddressRegex);
+
+                if (match) {
+                    var realIp = match[1]; // 提取IP地址
+                    // 查找并替换 "下次付款日期" 元素
+                    var listInfoTitles = document.querySelectorAll('.list-info-title');
+                    for (var i = 0; i < listInfoTitles.length; i++) {
+                        if (listInfoTitles[i].textContent === '下次付款日期') {
+                            var parentListItem = listInfoTitles[i].parentElement;
+                            parentListItem.querySelector('.list-info-title').textContent = '真实IP';
+
+                            // 设置真实IP文本为黄色
+                            var realIpText = parentListItem.querySelector('.list-info-text');
+                            realIpText.textContent = realIp;
+                            realIpText.style.color = 'yellow'; // 设置文本颜色为黄色
+
+                            break;
+                        }
+                    }
+                }
+            });
+    }
+})();

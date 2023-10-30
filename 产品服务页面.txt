@@ -1,0 +1,69 @@
+// ==UserScript==
+// @name         提取真实IP显示排除- Web Hosting
+// @namespace    http://your.website.com
+// @version      1.0
+// @description  从目标页面提取真实IP并插入到产品名称下方，突出显示为黄色
+// @author       饮茶先
+// @match        https://cloud.mtf.is/clientarea.php?action=services
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // 获取所有行
+    var rows = document.querySelectorAll('tr');
+
+    // 遍历每一行
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var productNameElement = row.querySelector('td.sorting_1');
+
+        if (productNameElement) {
+            var productName = productNameElement.textContent.trim();
+
+            if (!productName.includes("- Web Hosting")) {
+                // 提取行的ID
+                var dataURL = row.getAttribute('data-url');
+                var match = dataURL.match(/id=(\d+)/);
+
+                if (match) {
+                    var productId = parseInt(match[1], 10);
+
+                    // 提取目标页面的真实IP
+                    var targetURL = 'https://cloud.mtf.is/index.php?m=VirtualizorNAT&id=' + productId;
+                    fetch(targetURL)
+                        .then(function(response) {
+                            return response.text();
+                        })
+                        .then(function(data) {
+                            var ipAddressRegex = /连接地址 (\d+\.\d+\.\d+\.\d+):\d+/;
+                            var match = data.match(ipAddressRegex);
+
+                            if (match) {
+                                var realIp = match[1];
+
+                                // 创建新元素以放置真实IP，并设置样式为黄色
+                                var realIpElement = document.createElement('span');
+                                realIpElement.textContent = realIp;
+                                realIpElement.style.display = 'block'; // 换行显示
+                                realIpElement.style.marginTop = '5px'; // 与text-small之间的间距
+                                realIpElement.style.color = 'yellow'; // 设置文本颜色为黄色
+
+                                // 找到text-small元素
+                                var textSmallElement = row.querySelector('.text-small');
+
+                                // 插入真实IP到text-small上方
+                                if (textSmallElement) {
+                                    textSmallElement.parentNode.insertBefore(realIpElement, textSmallElement);
+                                }
+                            }
+                        });
+
+                    // 找到一次后插入一次后退出循循环，继续下一行
+                    break;
+                }
+            }
+        }
+    }
+})();
